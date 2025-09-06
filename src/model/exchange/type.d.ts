@@ -1,0 +1,1 @@
+type CurrencyType = 'KRW' | 'USD';
