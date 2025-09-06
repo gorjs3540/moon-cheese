@@ -1,11 +1,11 @@
 import { http } from '@/utils/http';
 
-interface PurchaseShoppingCartRequest {
+interface PurchaseCartListRequest {
   deliveryType: DeliveryType;
   totalPrice: number;
-  items: PurchaseItem[];
+  items: CartItem[];
 }
 
-export const purchaseShoppingCart = async (paylaod: PurchaseShoppingCartRequest) => {
-  return await http.post<PurchaseShoppingCartRequest, null>('/api/product/purchase', paylaod);
+export const purchaseCartList = async (paylaod: PurchaseCartListRequest) => {
+  return await http.post<PurchaseCartListRequest, null>('/api/product/purchase', paylaod);
 };

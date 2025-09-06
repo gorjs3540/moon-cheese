@@ -1,4 +1,4 @@
-interface PurchaseItem {
+interface CartItem {
   productId: number;
   quantity: number;
 }
