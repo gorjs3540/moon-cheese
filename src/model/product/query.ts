@@ -5,6 +5,7 @@ import * as apis from './api';
 export const productQueriesKey = {
   all: ['exchange'],
   getRecentProductList: () => [...productQueriesKey.all, 'recent-product-list'],
+  getProductList: () => [...productQueriesKey.all, 'product-list'],
 } as const;
 
 export const productQueries = {
@@ -12,5 +13,12 @@ export const productQueries = {
     queryOptions({
       queryKey: productQueriesKey.getRecentProductList(),
       queryFn: apis.getRecentProductList,
+      throwOnError: true,
+    }),
+  getProductList: () =>
+    queryOptions({
+      queryKey: productQueriesKey.getProductList(),
+      queryFn: apis.getProductList,
+      throwOnError: true,
     }),
 };

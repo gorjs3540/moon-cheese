@@ -12,5 +12,6 @@ export const userQueries = {
     queryOptions({
       queryKey: userQueriesKey.getUser(),
       queryFn: apis.getUser,
+      throwOnError: true,
     }),
 };

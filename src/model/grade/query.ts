@@ -12,5 +12,6 @@ export const gradeQueries = {
     queryOptions({
       queryKey: gradeQueriesKey.getGradePointList(),
       queryFn: apis.getGradePointList,
+      throwOnError: true,
     }),
 };
