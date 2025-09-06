@@ -12,5 +12,6 @@ export const exchangeQueries = {
     queryOptions({
       queryKey: exchangeQueriesKey.getExchangeRate(),
       queryFn: apis.getExchangeRate,
+      throwOnError: true,
     }),
 };

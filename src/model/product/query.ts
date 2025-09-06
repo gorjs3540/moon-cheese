@@ -13,10 +13,12 @@ export const productQueries = {
     queryOptions({
       queryKey: productQueriesKey.getRecentProductList(),
       queryFn: apis.getRecentProductList,
+      throwOnError: true,
     }),
   getProductList: () =>
     queryOptions({
       queryKey: productQueriesKey.getProductList(),
       queryFn: apis.getProductList,
+      throwOnError: true,
     }),
 };
