@@ -6,7 +6,6 @@ interface States {
 }
 
 interface Actions {
-  addCartItem: (cartItem: CartItem) => void;
   increaseCartItemQuantity: (cartItemId: number) => void;
   decreaseCartItemQuantity: (cartItemId: number) => void;
   removeCartItem: (cartItemId: number) => void;
@@ -17,24 +16,55 @@ const initialStates: States = {
   cartItems: [],
 };
 
-export const useHomeStore = create<States & Actions>()(
+export const useCartStore = create<States & Actions>()(
   persist(
     set => ({
       ...initialStates,
 
-      addCartItem: cartItem => set(state => ({ cartItems: [...state.cartItems, cartItem] })),
       increaseCartItemQuantity: cartItemId =>
-        set(state => ({
-          cartItems: state.cartItems.map(item =>
-            item.productId === cartItemId ? { ...item, quantity: item.quantity + 1 } : item
-          ),
-        })),
+        set(state => {
+          const existingItemIndex = state.cartItems.findIndex(item => item.productId === cartItemId);
+
+          if (existingItemIndex < 0) {
+            return {
+              cartItems: [...state.cartItems, { productId: cartItemId, quantity: 1 }],
+            };
+          }
+
+          const newCartItems = [...state.cartItems];
+
+          newCartItems[existingItemIndex] = {
+            ...newCartItems[existingItemIndex],
+            quantity: newCartItems[existingItemIndex].quantity + 1,
+          };
+
+          return { cartItems: newCartItems };
+        }),
+
       decreaseCartItemQuantity: cartItemId =>
-        set(state => ({
-          cartItems: state.cartItems.map(item =>
-            item.productId === cartItemId ? { ...item, quantity: item.quantity - 1 } : item
-          ),
-        })),
+        set(state => {
+          const existingItemIndex = state.cartItems.findIndex(item => item.productId === cartItemId);
+
+          if (existingItemIndex < 0) {
+            return state;
+          }
+
+          const currentItem = state.cartItems[existingItemIndex];
+
+          if (currentItem.quantity <= 1) {
+            return { cartItems: state.cartItems.filter(item => item.productId !== cartItemId) };
+          }
+
+          const newCartItems = [...state.cartItems];
+
+          newCartItems[existingItemIndex] = {
+            ...currentItem,
+            quantity: currentItem.quantity - 1,
+          };
+
+          return { cartItems: newCartItems };
+        }),
+
       removeCartItem: cartItemId =>
         set(state => ({ cartItems: state.cartItems.filter(item => item.productId !== cartItemId) })),
 
