@@ -1,13 +1,13 @@
-import { useState } from 'react';
 import { Flex, Stack, styled } from 'styled-system/jsx';
 import { Spacing, Text } from '@/ui-lib';
 import { DeliveryIcon, RocketIcon } from '@/ui-lib/components/icons';
 import { useGetUser } from '@/model/user';
 import { useGetCartProductList } from '@/model/product';
 import { DELIVERY_FEE_MAP } from '@/constants/delivery';
+import { useCartStore } from '@/stores';
 
 function DeliveryMethodSection() {
-  const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState<string>('Express');
+  const { deliveryType, setDeliveryType } = useCartStore(state => state);
 
   const { data: user } = useGetUser();
   const { totalPrice } = useGetCartProductList();
@@ -26,16 +26,16 @@ function DeliveryMethodSection() {
           description="2-3일 후 도착 예정"
           icon={<DeliveryIcon size={28} />}
           price={0}
-          isSelected={selectedDeliveryMethod === 'Express'}
-          onClick={() => setSelectedDeliveryMethod('Express')}
+          isSelected={deliveryType === 'EXPRESS'}
+          onClick={() => setDeliveryType('EXPRESS')}
         />
         <DeliveryItem
           title="Premium"
           description="당일 배송"
           icon={<RocketIcon size={28} />}
           price={deliveryFee}
-          isSelected={selectedDeliveryMethod === 'Premium'}
-          onClick={() => setSelectedDeliveryMethod('Premium')}
+          isSelected={deliveryType === 'PREMIUM'}
+          onClick={() => setDeliveryType('PREMIUM')}
         />
       </Stack>
     </styled.section>

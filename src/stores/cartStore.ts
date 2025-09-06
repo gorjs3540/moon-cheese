@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 
 interface States {
   cartItems: CartItem[];
+  deliveryType: DeliveryType;
 }
 
 interface Actions {
@@ -10,11 +11,13 @@ interface Actions {
   decreaseCartItemQuantity: (cartItemId: number) => void;
   addCartItem: (cartItem: CartItem) => void;
   removeCartItem: (cartItemId: number) => void;
+  setDeliveryType: (deliveryType: DeliveryType) => void;
   reset: () => void;
 }
 
 const initialStates: States = {
   cartItems: [],
+  deliveryType: 'EXPRESS',
 };
 
 export const useCartStore = create<States & Actions>()(
@@ -69,6 +72,8 @@ export const useCartStore = create<States & Actions>()(
       addCartItem: cartItem => set(state => ({ cartItems: [...state.cartItems, cartItem] })),
       removeCartItem: cartItemId =>
         set(state => ({ cartItems: state.cartItems.filter(item => item.productId !== cartItemId) })),
+
+      setDeliveryType: deliveryType => set({ deliveryType }),
 
       reset: () => set(initialStates),
     }),

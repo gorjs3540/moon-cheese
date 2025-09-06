@@ -1,34 +1,29 @@
 import { DELIVERY_FEE_MAP } from '@/constants/delivery';
-import { SECOND } from '@/constants/time';
+
 import { useGetExchangeRate } from '@/model/exchange';
 import { useGetCartProductList } from '@/model/product';
+import { usePurchaseCartList } from '@/model/purchase';
 import { useGetUser } from '@/model/user';
-import { useHomeStore } from '@/stores';
+import { useCartStore, useHomeStore } from '@/stores';
 import { Button, Spacing, Text } from '@/ui-lib';
-import { toast } from '@/ui-lib/components/toast';
-import { delay } from '@/utils/async';
 import { convertPrice } from '@/utils/exchangeRate';
-import { useState } from 'react';
-import { useNavigate } from 'react-router';
 import { Box, Divider, Flex, HStack, Stack, styled } from 'styled-system/jsx';
 
 function CheckoutSection() {
-  const navigate = useNavigate();
-
-  const [isPurchasing, setIsPurchasing] = useState(false);
   const currentCurrency = useHomeStore(state => state.currency);
+  const { cartItems, deliveryType } = useCartStore(state => state);
 
   const { data: user } = useGetUser();
   const { data: exchangeRate } = useGetExchangeRate();
   const { cartProducts, totalPrice } = useGetCartProductList();
+  const { mutate: purchaseCartList, isPending: isPurchasing } = usePurchaseCartList();
 
   const onClickPurchase = async () => {
-    setIsPurchasing(true);
-    await delay(SECOND * 1);
-    setIsPurchasing(false);
-    toast.success('결제가 완료되었습니다.');
-    await delay(SECOND * 2);
-    navigate('/');
+    purchaseCartList({
+      deliveryType: deliveryType,
+      totalPrice,
+      items: cartItems,
+    });
   };
 
   const deliveryFee = totalPrice > 30 ? 0 : DELIVERY_FEE_MAP[user?.grade as Grade];
