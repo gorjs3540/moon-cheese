@@ -1,4 +1,5 @@
 import { useGetExchangeRate } from '@/model/exchange';
+import { useCartStore } from '@/stores';
 import { useHomeStore } from '@/stores/homeStore';
 import { Button, Counter, RatingGroup, Spacing, Text } from '@/ui-lib';
 import Tag, { type TagType } from '@/ui-lib/components/tag';
@@ -6,6 +7,7 @@ import { convertPrice } from '@/utils/exchangeRate';
 import { Box, Divider, Flex, Stack, styled } from 'styled-system/jsx';
 
 interface ProductInfoSectionProps {
+  productId: number;
   name: string;
   category: TagType;
   rating: number;
@@ -13,10 +15,21 @@ interface ProductInfoSectionProps {
   quantity: number;
 }
 
-export default function ProductInfoSection({ name, category, rating, price, quantity }: ProductInfoSectionProps) {
+export default function ProductInfoSection({
+  productId,
+  name,
+  category,
+  rating,
+  price,
+  quantity,
+}: ProductInfoSectionProps) {
   const currentCurrency = useHomeStore(state => state.currency);
+  const { cartItems, increaseCartItemQuantity, decreaseCartItemQuantity } = useCartStore(state => state);
 
   const { data: exchangeRate } = useGetExchangeRate();
+
+  const cartQuantity = cartItems.find(item => item.productId === productId)?.quantity || 0;
+  const isAlreadyInCart = !!cartQuantity;
 
   return (
     <styled.section css={{ bg: 'background.01_white', p: 5 }}>
@@ -43,9 +56,9 @@ export default function ProductInfoSection({ name, category, rating, price, quan
           </Text>
         </Flex>
         <Counter.Root>
-          <Counter.Minus onClick={() => {}} disabled={true} />
-          <Counter.Display value={3} />
-          <Counter.Plus onClick={() => {}} />
+          <Counter.Minus onClick={() => {}} disabled={isAlreadyInCart} />
+          <Counter.Display value={cartQuantity} />
+          <Counter.Plus onClick={() => {}} disabled={isAlreadyInCart} />
         </Counter.Root>
       </Flex>
 
@@ -53,7 +66,7 @@ export default function ProductInfoSection({ name, category, rating, price, quan
 
       {/* 장바구니 버튼 */}
       <Button fullWidth color="primary" size="lg">
-        장바구니
+        {isAlreadyInCart ? '장바구니에서 제거' : '장바구니 담기'}
       </Button>
     </styled.section>
   );
