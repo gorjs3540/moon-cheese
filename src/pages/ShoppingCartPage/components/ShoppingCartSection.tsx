@@ -8,7 +8,7 @@ import { useGetExchangeRate } from '@/model/exchange';
 
 function ShoppingCartSection() {
   const currentCurrency = useHomeStore(state => state.currency);
-  const { cartItems, removeCartItem, decreaseCartItemQuantity, increaseCartItemQuantity } = useCartStore(
+  const { cartItems, removeCartItem, decreaseCartItemQuantity, increaseCartItemQuantity, reset } = useCartStore(
     state => state
   );
 
@@ -19,7 +19,7 @@ function ShoppingCartSection() {
     <styled.section css={{ p: 5, bgColor: 'background.01_white' }}>
       <Flex justify="space-between">
         <Text variant="H2_Bold">장바구니</Text>
-        <Button color={'neutral'} size="sm">
+        <Button color={'neutral'} size="sm" onClick={reset}>
           전체삭제
         </Button>
       </Flex>
