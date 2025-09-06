@@ -5,15 +5,15 @@ import Tag, { type TagType } from '@/ui-lib/components/tag';
 import { convertPrice } from '@/utils/exchangeRate';
 import { Box, Divider, Flex, Stack, styled } from 'styled-system/jsx';
 
-type ProductInfoSectionProps = {
+interface ProductInfoSectionProps {
   name: string;
   category: TagType;
   rating: number;
   price: number;
   quantity: number;
-};
+}
 
-function ProductInfoSection({ name, category, rating, price, quantity }: ProductInfoSectionProps) {
+export default function ProductInfoSection({ name, category, rating, price, quantity }: ProductInfoSectionProps) {
   const currentCurrency = useHomeStore(state => state.currency);
 
   const { data: exchangeRate } = useGetExchangeRate();
@@ -58,5 +58,3 @@ function ProductInfoSection({ name, category, rating, price, quantity }: Product
     </styled.section>
   );
 }
-
-export default ProductInfoSection;
