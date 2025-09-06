@@ -45,10 +45,12 @@ function ProductListSection() {
 
       <Grid gridTemplateColumns="repeat(2, 1fr)" rowGap={9} columnGap={4} p={5}>
         {filteredProductList?.map(product => {
-          const isSoldOut = product.stock === 0;
           const isGlutenFree = product.category === 'CRACKER' && (product as CrackerProduct).isGlutenFree;
           const isCaffeineFree = product.category === 'TEA' && (product as TeaProduct).isCaffeineFree;
+
           const cartQuantity = cartItems.find(item => item.productId === product.id)?.quantity || 0;
+          const isSoldOut = product.stock === 0;
+          const isMaxQuantity = cartQuantity >= product.stock;
 
           return (
             <ProductItem.Root key={product.id} onClick={() => handleClickProduct(product.id)}>
@@ -67,7 +69,10 @@ function ProductListSection() {
               <Counter.Root>
                 <Counter.Minus onClick={() => decreaseCartItemQuantity(product.id)} disabled={cartQuantity === 0} />
                 <Counter.Display value={cartQuantity} />
-                <Counter.Plus onClick={() => increaseCartItemQuantity(product.id)} disabled={isSoldOut} />
+                <Counter.Plus
+                  onClick={() => increaseCartItemQuantity(product.id)}
+                  disabled={isSoldOut || isMaxQuantity}
+                />
               </Counter.Root>
             </ProductItem.Root>
           );
