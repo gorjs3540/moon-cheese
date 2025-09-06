@@ -8,7 +8,9 @@ import { useGetExchangeRate } from '@/model/exchange';
 
 function ShoppingCartSection() {
   const currentCurrency = useHomeStore(state => state.currency);
-  const { cartItems } = useCartStore(state => state);
+  const { cartItems, removeCartItem, decreaseCartItemQuantity, increaseCartItemQuantity } = useCartStore(
+    state => state
+  );
 
   const { data: exchangeRate } = useGetExchangeRate();
   const { cartProducts } = useGetCartProductList();
@@ -33,6 +35,7 @@ function ShoppingCartSection() {
       >
         {cartProducts.map((product, index) => {
           const cartQuantity = cartItems.find(item => item.productId === product.id)?.quantity || 0;
+          const isMaxQuantity = cartQuantity >= product.stock;
 
           return (
             <>
@@ -43,16 +46,16 @@ function ShoppingCartSection() {
                     type={product.category.toLowerCase() as TagType}
                     title={product.name}
                     description={product.description}
-                    onDelete={() => {}}
+                    onDelete={() => removeCartItem(product.id)}
                   />
                   <ShoppingCartItem.Footer>
                     <ShoppingCartItem.Price>
                       {convertPrice(product.price, currentCurrency, exchangeRate?.exchangeRate)}
                     </ShoppingCartItem.Price>
                     <Counter.Root>
-                      <Counter.Minus onClick={() => {}} disabled={true} />
+                      <Counter.Minus onClick={() => decreaseCartItemQuantity(product.id)} />
                       <Counter.Display value={cartQuantity} />
-                      <Counter.Plus onClick={() => {}} />
+                      <Counter.Plus onClick={() => increaseCartItemQuantity(product.id)} disabled={isMaxQuantity} />
                     </Counter.Root>
                   </ShoppingCartItem.Footer>
                 </ShoppingCartItem.Content>
