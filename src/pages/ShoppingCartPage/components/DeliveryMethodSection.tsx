@@ -4,12 +4,7 @@ import { Spacing, Text } from '@/ui-lib';
 import { DeliveryIcon, RocketIcon } from '@/ui-lib/components/icons';
 import { useGetUser } from '@/model/user';
 import { useGetCartProductList } from '@/model/product';
-
-const DELIVERY_FEE_MAP: Record<Grade, number> = {
-  EXPLORER: 2,
-  PILOT: 1,
-  COMMANDER: 0,
-};
+import { DELIVERY_FEE_MAP } from '@/constants/delivery';
 
 function DeliveryMethodSection() {
   const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState<string>('Express');

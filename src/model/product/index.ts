@@ -33,12 +33,12 @@ export const useGetCartProductList = () => {
 
   return useSuspenseQueries({
     queries: cartItems.map(item => ({
-      ...productQueries.getProduct({ productId: item.productId }),
+      ...productQueries.getCartProduct({ productId: item.productId, quantity: item.quantity }),
     })),
     combine: results => {
       return {
         cartProducts: results.map(result => result.data),
-        totalPrice: results.reduce((acc, result) => acc + result.data.price, 0),
+        totalPrice: results.reduce((acc, result, index) => acc + result.data.price * cartItems[index].quantity, 0),
       };
     },
   });
