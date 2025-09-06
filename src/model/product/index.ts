@@ -7,3 +7,9 @@ export const useGetRecentProductList = () => {
     ...productQueries.getRecentProductList(),
   });
 };
+
+export const useGetProductList = () => {
+  return useQuery({
+    ...productQueries.getProductList(),
+  });
+};
