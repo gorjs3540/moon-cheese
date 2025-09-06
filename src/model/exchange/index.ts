@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 import { exchangeQueries } from './query';
 
 export const useGetExchangeRate = () => {
-  return useQuery({
+  return useSuspenseQuery({
     ...exchangeQueries.getExchangeRate(),
   });
 };

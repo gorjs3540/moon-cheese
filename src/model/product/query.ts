@@ -39,4 +39,10 @@ export const productQueries = {
       queryFn: () => apis.getRecommendProductList({ productId }),
       throwOnError: true,
     }),
+  getCartProduct: ({ productId }: apis.GetProductRequest) =>
+    queryOptions({
+      queryKey: productQueriesKey.getProduct({ productId }),
+      queryFn: () => apis.getProduct({ productId }),
+      throwOnError: true,
+    }),
 };

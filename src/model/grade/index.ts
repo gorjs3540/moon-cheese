@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 import { gradeQueries } from './query';
 
 export const useGetGradePointList = () => {
-  return useQuery({
+  return useSuspenseQuery({
     ...gradeQueries.getGradePointList(),
   });
 };

@@ -16,6 +16,7 @@ export default function ProductionInfoGroup() {
     <>
       <ThumbnailSection images={product.images} />
       <ProductInfo
+        productId={product.id}
         name={product.name}
         category={product.category.toLowerCase() as TagType}
         rating={product.rating}

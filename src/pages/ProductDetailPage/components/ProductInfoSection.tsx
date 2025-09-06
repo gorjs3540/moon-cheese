@@ -1,11 +1,14 @@
 import { useGetExchangeRate } from '@/model/exchange';
+import { useCartStore } from '@/stores';
 import { useHomeStore } from '@/stores/homeStore';
 import { Button, Counter, RatingGroup, Spacing, Text } from '@/ui-lib';
 import Tag, { type TagType } from '@/ui-lib/components/tag';
 import { convertPrice } from '@/utils/exchangeRate';
+import { useState } from 'react';
 import { Box, Divider, Flex, Stack, styled } from 'styled-system/jsx';
 
 interface ProductInfoSectionProps {
+  productId: number;
   name: string;
   category: TagType;
   rating: number;
@@ -13,10 +16,39 @@ interface ProductInfoSectionProps {
   quantity: number;
 }
 
-export default function ProductInfoSection({ name, category, rating, price, quantity }: ProductInfoSectionProps) {
+export default function ProductInfoSection({
+  productId,
+  name,
+  category,
+  rating,
+  price,
+  quantity,
+}: ProductInfoSectionProps) {
+  const [inputQuantity, setInputQuantity] = useState<number>(0);
+
   const currentCurrency = useHomeStore(state => state.currency);
+  const { cartItems, addCartItem, removeCartItem } = useCartStore(state => state);
 
   const { data: exchangeRate } = useGetExchangeRate();
+
+  const handleQuantityChange = (type: 'increase' | 'decrease') => {
+    setInputQuantity(prev => prev + (type === 'increase' ? 1 : -1));
+  };
+
+  const handleCartButtonClick = () => {
+    if (isAlreadyInCart) {
+      removeCartItem(productId);
+    } else {
+      addCartItem({ productId, quantity: inputQuantity });
+    }
+
+    setInputQuantity(0);
+  };
+
+  const cartQuantity = cartItems.find(item => item.productId === productId)?.quantity || 0;
+  const isAlreadyInCart = !!cartQuantity;
+  const isMaxQuantity = inputQuantity >= quantity;
+  const isMinQuantity = inputQuantity <= 0;
 
   return (
     <styled.section css={{ bg: 'background.01_white', p: 5 }}>
@@ -43,17 +75,17 @@ export default function ProductInfoSection({ name, category, rating, price, quan
           </Text>
         </Flex>
         <Counter.Root>
-          <Counter.Minus onClick={() => {}} disabled={true} />
-          <Counter.Display value={3} />
-          <Counter.Plus onClick={() => {}} />
+          <Counter.Minus onClick={() => handleQuantityChange('decrease')} disabled={isAlreadyInCart || isMinQuantity} />
+          <Counter.Display value={inputQuantity || cartQuantity} />
+          <Counter.Plus onClick={() => handleQuantityChange('increase')} disabled={isAlreadyInCart || isMaxQuantity} />
         </Counter.Root>
       </Flex>
 
       <Spacing size={5} />
 
       {/* 장바구니 버튼 */}
-      <Button fullWidth color="primary" size="lg">
-        장바구니
+      <Button fullWidth color="primary" size="lg" onClick={handleCartButtonClick}>
+        {isAlreadyInCart ? '장바구니에서 제거' : '장바구니 담기'}
       </Button>
     </styled.section>
   );

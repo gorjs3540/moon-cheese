@@ -1,101 +1,72 @@
-import { Button, Counter, Spacing, Text } from "@/ui-lib";
-import { Divider, Flex, Stack, styled } from "styled-system/jsx";
-import ShoppingCartItem from "./ShoppingCartItem";
+import { Button, Counter, Spacing, Text, type TagType } from '@/ui-lib';
+import { Divider, Flex, Stack, styled } from 'styled-system/jsx';
+import ShoppingCartItem from './ShoppingCartItem';
+import { useCartStore, useHomeStore } from '@/stores';
+import { useGetCartProductList } from '@/model/product';
+import { convertPrice } from '@/utils/exchangeRate';
+import { useGetExchangeRate } from '@/model/exchange';
 
 function ShoppingCartSection() {
-    return (
-        <styled.section css={{ p: 5, bgColor: "background.01_white" }}>
-            <Flex justify="space-between">
-                <Text variant="H2_Bold">장바구니</Text>
-                <Button color={"neutral"} size="sm">
-                    전체삭제
-                </Button>
-            </Flex>
-            <Spacing size={4} />
-            <Stack
-                gap={5}
-                css={{
-                    p: 5,
-                    border: "1px solid",
-                    borderColor: "border.01_gray",
-                    rounded: "2xl",
-                }}
-            >
-                <ShoppingCartItem.Root>
-                    <ShoppingCartItem.Image
-                        src="/moon-cheese-images/cheese-1-1.jpg"
-                        alt="월레스의 오리지널 웬슬리데일"
-                    />
-                    <ShoppingCartItem.Content>
-                        <ShoppingCartItem.Info
-                            type="cheese"
-                            title="월레스의 오리지널 웬슬리데일"
-                            description="월레스의 오리지널 웬슬리데일"
-                            onDelete={() => {}}
-                        />
-                        <ShoppingCartItem.Footer>
-                            <ShoppingCartItem.Price>$12.99</ShoppingCartItem.Price>
-                            <Counter.Root>
-                                <Counter.Minus onClick={() => {}} disabled={true} />
-                                <Counter.Display value={1} />
-                                <Counter.Plus onClick={() => {}} />
-                            </Counter.Root>
-                        </ShoppingCartItem.Footer>
-                    </ShoppingCartItem.Content>
-                </ShoppingCartItem.Root>
+  const currentCurrency = useHomeStore(state => state.currency);
+  const { cartItems, removeCartItem, decreaseCartItemQuantity, increaseCartItemQuantity, reset } = useCartStore(
+    state => state
+  );
 
-                <Divider color="border.01_gray" />
+  const { data: exchangeRate } = useGetExchangeRate();
+  const { cartProducts } = useGetCartProductList();
 
-                <ShoppingCartItem.Root>
-                    <ShoppingCartItem.Image
-                        src="/moon-cheese-images/cheese-2-1.jpg"
-                        alt="월레스의 오리지널 웬슬리데일"
-                    />
-                    <ShoppingCartItem.Content>
-                        <ShoppingCartItem.Info
-                            type="cracker"
-                            title="월레스의 오리지널 웬슬리데일"
-                            description="월레스의 오리지널 웬슬리데일"
-                            onDelete={() => {}}
-                        />
-                        <ShoppingCartItem.Footer>
-                            <ShoppingCartItem.Price>$12.99</ShoppingCartItem.Price>
-                            <Counter.Root>
-                                <Counter.Minus onClick={() => {}} disabled={true} />
-                                <Counter.Display value={1} />
-                                <Counter.Plus onClick={() => {}} />
-                            </Counter.Root>
-                        </ShoppingCartItem.Footer>
-                    </ShoppingCartItem.Content>
-                </ShoppingCartItem.Root>
+  return (
+    <styled.section css={{ p: 5, bgColor: 'background.01_white' }}>
+      <Flex justify="space-between">
+        <Text variant="H2_Bold">장바구니</Text>
+        <Button color={'neutral'} size="sm" onClick={reset}>
+          전체삭제
+        </Button>
+      </Flex>
+      <Spacing size={4} />
+      <Stack
+        gap={5}
+        css={{
+          p: 5,
+          border: '1px solid',
+          borderColor: 'border.01_gray',
+          rounded: '2xl',
+        }}
+      >
+        {cartProducts.map((product, index) => {
+          const cartQuantity = cartItems.find(item => item.productId === product.id)?.quantity || 0;
+          const isMaxQuantity = cartQuantity >= product.stock;
 
-                <Divider color="border.01_gray" />
-
-                <ShoppingCartItem.Root>
-                    <ShoppingCartItem.Image
-                        src="/moon-cheese-images/cheese-3-1.jpg"
-                        alt="월레스의 오리지널 웬슬리데일"
-                    />
-                    <ShoppingCartItem.Content>
-                        <ShoppingCartItem.Info
-                            type="tea"
-                            title="월레스의 오리지널 웬슬리데일"
-                            description="월레스의 오리지널 웬슬리데일"
-                            onDelete={() => {}}
-                        />
-                        <ShoppingCartItem.Footer>
-                            <ShoppingCartItem.Price>$12.99</ShoppingCartItem.Price>
-                            <Counter.Root>
-                                <Counter.Minus onClick={() => {}} disabled={true} />
-                                <Counter.Display value={1} />
-                                <Counter.Plus onClick={() => {}} />
-                            </Counter.Root>
-                        </ShoppingCartItem.Footer>
-                    </ShoppingCartItem.Content>
-                </ShoppingCartItem.Root>
-            </Stack>
-        </styled.section>
-    );
+          return (
+            <>
+              <ShoppingCartItem.Root key={product.id}>
+                <ShoppingCartItem.Image src={product.images[0]} alt={product.name} />
+                <ShoppingCartItem.Content>
+                  <ShoppingCartItem.Info
+                    type={product.category.toLowerCase() as TagType}
+                    title={product.name}
+                    description={product.description}
+                    onDelete={() => removeCartItem(product.id)}
+                  />
+                  <ShoppingCartItem.Footer>
+                    <ShoppingCartItem.Price>
+                      {convertPrice(product.price, currentCurrency, exchangeRate?.exchangeRate)}
+                    </ShoppingCartItem.Price>
+                    <Counter.Root>
+                      <Counter.Minus onClick={() => decreaseCartItemQuantity(product.id)} />
+                      <Counter.Display value={cartQuantity} />
+                      <Counter.Plus onClick={() => increaseCartItemQuantity(product.id)} disabled={isMaxQuantity} />
+                    </Counter.Root>
+                  </ShoppingCartItem.Footer>
+                </ShoppingCartItem.Content>
+              </ShoppingCartItem.Root>
+              {index !== cartProducts.length - 1 && <Divider color="border.01_gray" />}
+            </>
+          );
+        })}
+      </Stack>
+    </styled.section>
+  );
 }
 
 export default ShoppingCartSection;

@@ -7,12 +7,14 @@ import { useGetExchangeRate } from '@/model/exchange';
 import { convertPrice } from '@/utils/exchangeRate';
 import { useHomeStore } from '@/stores/homeStore';
 import { useGetProductList } from '@/model/product';
+import { useCartStore } from '@/stores/cartStore';
 
 function ProductListSection() {
   const navigate = useNavigate();
 
   const [currentTab, setCurrentTab] = useState('all');
   const currentCurrency = useHomeStore(state => state.currency);
+  const { cartItems, increaseCartItemQuantity, decreaseCartItemQuantity } = useCartStore(state => state);
 
   const { data: exchangeRate } = useGetExchangeRate();
   const { data: productList } = useGetProductList();
@@ -43,9 +45,12 @@ function ProductListSection() {
 
       <Grid gridTemplateColumns="repeat(2, 1fr)" rowGap={9} columnGap={4} p={5}>
         {filteredProductList?.map(product => {
-          const isSoldOut = product.stock === 0;
           const isGlutenFree = product.category === 'CRACKER' && (product as CrackerProduct).isGlutenFree;
           const isCaffeineFree = product.category === 'TEA' && (product as TeaProduct).isCaffeineFree;
+
+          const cartQuantity = cartItems.find(item => item.productId === product.id)?.quantity || 0;
+          const isSoldOut = product.stock === 0;
+          const isMaxQuantity = cartQuantity >= product.stock;
 
           return (
             <ProductItem.Root key={product.id} onClick={() => handleClickProduct(product.id)}>
@@ -62,9 +67,12 @@ function ProductListSection() {
                 {isCaffeineFree && <ProductItem.FreeTag type="caffeine" />}
               </ProductItem.Meta>
               <Counter.Root>
-                <Counter.Minus onClick={() => {}} disabled={true} />
-                <Counter.Display value={0} />
-                <Counter.Plus onClick={() => {}} disabled={isSoldOut} />
+                <Counter.Minus onClick={() => decreaseCartItemQuantity(product.id)} disabled={cartQuantity === 0} />
+                <Counter.Display value={cartQuantity} />
+                <Counter.Plus
+                  onClick={() => increaseCartItemQuantity(product.id)}
+                  disabled={isSoldOut || isMaxQuantity}
+                />
               </Counter.Root>
             </ProductItem.Root>
           );
