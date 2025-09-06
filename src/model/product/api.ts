@@ -15,3 +15,13 @@ interface GetProductListResponse {
 export const getProductList = async () => {
   return await http.get<GetProductListResponse>('/api/product/list');
 };
+
+export interface GetProductRequest {
+  productId: number;
+}
+
+type GetProductResponse = Product;
+
+export const getProduct = async ({ productId }: GetProductRequest) => {
+  return await http.get<GetProductResponse>(`/api/product/${productId}`);
+};

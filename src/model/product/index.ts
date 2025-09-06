@@ -13,3 +13,13 @@ export const useGetProductList = () => {
     ...productQueries.getProductList(),
   });
 };
+
+interface GetProductParams {
+  productId: number;
+}
+
+export const useGetProduct = ({ productId }: GetProductParams) => {
+  return useQuery({
+    ...productQueries.getProduct({ productId }),
+  });
+};
