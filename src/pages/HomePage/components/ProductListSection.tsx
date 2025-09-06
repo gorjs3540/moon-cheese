@@ -57,9 +57,9 @@ function ProductListSection() {
                   <ProductItem.Price>
                     {convertPrice(product.price, currentCurrency, exchangeRate?.exchangeRate)}
                   </ProductItem.Price>
-                  {isGlutenFree && <ProductItem.FreeTag type="gluten" />}
-                  {isCaffeineFree && <ProductItem.FreeTag type="caffeine" />}
                 </ProductItem.MetaLeft>
+                {isGlutenFree && <ProductItem.FreeTag type="gluten" />}
+                {isCaffeineFree && <ProductItem.FreeTag type="caffeine" />}
               </ProductItem.Meta>
               <Counter.Root>
                 <Counter.Minus onClick={() => {}} disabled={true} />
