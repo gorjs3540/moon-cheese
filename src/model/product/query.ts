@@ -12,12 +12,6 @@ export const productQueriesKey = {
     'recommend-product-list',
     productId,
   ],
-  getCartProduct: ({ productId, quantity }: { productId: number; quantity: number }) => [
-    ...productQueriesKey.all,
-    'cart-product',
-    productId,
-    quantity,
-  ],
 } as const;
 
 export const productQueries = {
@@ -45,9 +39,9 @@ export const productQueries = {
       queryFn: () => apis.getRecommendProductList({ productId }),
       throwOnError: true,
     }),
-  getCartProduct: ({ productId, quantity }: { productId: number; quantity: number }) =>
+  getCartProduct: ({ productId }: apis.GetProductRequest) =>
     queryOptions({
-      queryKey: productQueriesKey.getCartProduct({ productId, quantity }),
+      queryKey: productQueriesKey.getProduct({ productId }),
       queryFn: () => apis.getProduct({ productId }),
       throwOnError: true,
     }),
